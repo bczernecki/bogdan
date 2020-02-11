@@ -14,7 +14,7 @@ saveRDS(pkb, "data/pkb.rds")
 pkb = readRDS("data/pkb.rds")
 
 library(fpp)
-pkb2 = ts(c(pkb$gdp/1000, 620), frequency = 4, start = c(1993,1), end = c(2019,4))
+pkb2 = ts(pkb$gdp/1000, frequency = 4, start = c(1993,1), end = c(2019,4))
 
 library(forecast)
 trend_beer = ma(pkb2, order = 4, centre = T)
@@ -27,38 +27,41 @@ decompose_beer = decompose(ts_beer, "additive")
 plot(as.ts(decompose_beer$seasonal))
 plot(as.ts(decompose_beer$trend))
 plot(as.ts(decompose_beer$random))
+
+svg("dekompozycja.svg")
 plot(decompose_beer)
+dev.off()
 
 #remotes::install_github("statisticspoland/R_Package_to_API_BDL", upgrade = "always", type = "binary")
-
+#library(bdl)
 decompose_beer$random
-
 # chyba lepiej walnąć jakiś model regresyjny
 head(pkb)
-model = lm(gdp~yy+as.factor(mm), data=pkb)
+# skopiujmy dane do pkb2
+pkb2 = pkb
+pkb2$mm = pkb2$yy + (1/4*1:4-0.15)
+pkb2$mm2 = 1:4
+model = lm(gdp~mm+I(mm^2)+as.factor(mm2), data=pkb2)
 
 sekwencja = seq.Date(as.Date("1993-01-01"), as.Date("2019-12-31"), by = "quarter")
 
-plot(sekwencja, c(pkb$gdp,600000), type= 'l')
-lines(sekwencja, c(predict(model), 600000), col='red')
+plot(sekwencja, pkb$gdp, type= 'l')
+lines(sekwencja, predict(model), col='red')
 
 # generalnie rośnie nam niesamowicie odchylenie standardowe w kolejnych latach 
 # zatem:
 head(pkb)
 test = filter(pkb, mm == 1)
-plot(test$gdp/sd(test$gdp))
-head(pkb)
-
-plot(pkb$gdp/sd(pkb$gdp), type='l')
 
 pkb$sd = pkb$gdp/sd(pkb$gdp)
+plot(pkb$gdp/sd(pkb$gdp), type='l')
 
-pkb %>% group_by(mm) %>% summarise(gdp/sd(gdp))
   
 q1 = filter(pkb, mm == 3) %>% select(sd) %>% unlist()
 plot(q1)
 dane = data.frame(data = 1993:2019, q1 = q1)
-plot(dane)
+pdf("odchylenie_standardowe.pdf")
+plot(dane, main = 'przyrost odchylenia standardowego dla III dekady', ylab = "sd")
 model1 = lm(q1 ~ data, dane)
 abline(model1)
-
+dev.off()
