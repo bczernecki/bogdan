@@ -25,3 +25,6 @@ df = dplyr::select(dane, yy:temp)
 head(df)
 colnames(df)[5] = "temp_anom"
 saveRDS(df, "data/anomalie.rds")
+
+# df2 = dplyr::select(dane, data, temp, opad, kbw)
+# writexl::write_xlsx(df2, "data/dane_meteo.xlsx")
