@@ -19,8 +19,8 @@ mod13q1_rzecin <- mt_subset(product = "MOD13Q1",
                             band = "250m_16_days_NDVI",
                             start = "2000-02-18",
                             end = "2020-02-18",
-                            km_lr = 1,
-                            km_ab = 1,
+                            km_lr = 0,
+                            km_ab = 0,
                             site_name = "rzecin",
                             internal = TRUE,
                             progress = TRUE)
@@ -31,8 +31,8 @@ myd13q1_rzecin <- mt_subset(product = "MYD13Q1",
                             band = "250m_16_days_NDVI",
                             start = "2000-02-18",
                             end = "2020-02-18",
-                            km_lr = 1,
-                            km_ab = 1,
+                            km_lr = 0,
+                            km_ab = 0,
                             site_name = "rzecin",
                             internal = TRUE,
                             progress = TRUE)
@@ -44,8 +44,8 @@ mod13q1_kusowo <- mt_subset(product = "MOD13Q1",
                             band = "250m_16_days_NDVI",
                             start = "2000-02-18",
                             end = "2020-02-18",
-                            km_lr = 1,
-                            km_ab = 1,
+                            km_lr = 0,
+                            km_ab = 0,
                             site_name = "kusowo",
                             internal = TRUE,
                             progress = TRUE)
@@ -56,8 +56,8 @@ myd13q1_kusowo <- mt_subset(product = "MYD13Q1",
                             band = "250m_16_days_NDVI",
                             start = "2000-02-18",
                             end = "2020-02-18",
-                            km_lr = 1,
-                            km_ab = 1,
+                            km_lr = 0,
+                            km_ab = 0,
                             site_name = "kusowo",
                             internal = TRUE,
                             progress = TRUE)
@@ -75,18 +75,20 @@ arcachon <- r %>% filter(value > -2000) %>%
 # plot LAI by date and per land cover class
 library(tidyverse)
 library(writexl)
-writexl::write_xlsx(x = arcachon, path = "~/bogdan.xlsx")
-ggplot(arcachon, aes(x = doy, y = ndvi_mean, colour = as.factor(lubridate::year(calendar_date)))) +
-  geom_point() +
-  geom_line()+
+writexl::write_xlsx(x = arcachon, path = "~/bogdan2.xlsx")
+#ggplot(arcachon, aes(x = doy, y = ndvi_mean, colour = as.factor(lubridate::year(calendar_date)))) +
+ggplot(arcachon, aes(x = as.factor(doy), y = ndvi_mean)) +  
+  geom_boxplot() +
+  #geom_line()+
   #geom_smooth(span = 0.5, method = "loess") +
   labs(x = "day of year (DOY)",
        y = "leaf area index (LAI)") +
   theme_minimal()+
-  theme(legend.title = element_blank())
+  theme(legend.title = element_blank())+
+  facet_wrap(~site)
 
 library(tidyverse)
-spread(arcachon, )
+#spread(arcachon, )
 #install.packages("MODISTools")
 
 sessionInfo()
